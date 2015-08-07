@@ -44,7 +44,6 @@ let no = CCHashtbl.of_list [
   "he"     , "לא"        ; (* Hebrew *)
   "hi"     , "नहीं"       ; (* Hindi *)
   "hu"     , "Nem."      ; (* Hungarian *)
-  "hu"     , "No."       ; (* Hungarian *)
   "ia"     , "No."       ; (* Interlingua *)
   "id"     , "Tidak."    ; (* Indonesian *)
   "is"     , "Nei."      ; (* Icelandic *)

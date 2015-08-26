@@ -23,11 +23,11 @@ let bool_of_env = function
 
 (** Default language *)
 let bootvar_lang =
-  bootvar ~default:"en" "lang"
+  Key.create ~default:"en" "lang" Key.Desc.string
 
 (** Consider headers *)
 let bootvar_use_headers =
-  bootvar ~default:"true" "use-headers"
+  Key.create ~default:true "use-headers" Key.Desc.bool
 
 (* Network configuration *)
 
@@ -55,20 +55,21 @@ let keys = crunch "./secrets"
 
 (* Dependencies *)
 
-let https =
-  let libraries = [ "tls.mirage"; "mirage-http" ] in
-  let packages = [ "tls"; "mirage-http" ] in
-  foreign ~libraries ~packages "Dispatch.Make"
-    (console @-> stackv4 @-> clock @-> kv_ro @-> kv_ro @-> job)
+let server =
+  foreign "Dispatch.Make"
+    (console @-> clock @-> kv_ro @-> kv_ro @-> http @-> job)
+
+let my_https =
+  http_server @@ conduit_direct ~tls:true stack
 
 let () =
-  let ocamlfind = [ "sequence" ; "containers" ; "tyxml" ] in
-  let opam = [ "sequence" ; "containers" ; "tyxml" ] in
-  add_to_ocamlfind_libraries ocamlfind;
-  add_to_opam_packages opam;
+  let libraries = [ "sequence" ; "containers" ; "tyxml" ] in
+  let packages = [ "sequence" ; "containers" ; "tyxml" ] in
   register "No"
-    ~bootvars:[
-      bootvar_lang ;
-      bootvar_use_headers ;
+    ~libraries
+    ~packages
+    ~keys:[
+      Key.V bootvar_lang ;
+      Key.V bootvar_use_headers ;
     ]
-    [ https $ default_console $ stack $ default_clock $ data $ keys ]
+    [ server $ default_console $ default_clock $ data $ keys $ my_https ]

@@ -29,7 +29,7 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
     | _  -> true
 
   let accept_lang headers =
-    if not @@ bool_of_string @@ Bootvar_gen.use_headers () then []
+    if not @@ Bootvar_gen.use_headers () then []
     else
       let open Cohttp in
       headers
@@ -87,45 +87,29 @@ end
 
 (** Server boilerplate *)
 module Make
-    (C : CONSOLE) (S : STACKV4)
-    (Clock : CLOCK)
-    (DATA : KV_RO) (KEYS: KV_RO) =
+    (C : CONSOLE) (Clock : CLOCK)
+    (DATA : KV_RO) (KEYS: KV_RO)
+    (Http: HTTP) =
 struct
 
-  module TCP  = S.TCPV4
-  module TLS  = Tls_mirage.Make (TCP)
   module X509 = Tls_mirage.X509 (KEYS) (Clock)
 
-  module Http  = Cohttp_mirage.Server(TCP)
-  module Https = Cohttp_mirage.Server(TLS)
-
   module D  = Dispatch(C)(DATA)(Http)
-  module DS = Dispatch(C)(DATA)(Https)
 
   let log c fmt = Printf.ksprintf (C.log c) fmt
-
-  let with_http c = Http.listen @@ D.serve c D.redirect
-
-  let with_tls c cfg tcp ~f =
-    let peer, port = TCP.get_dest tcp in
-    let log str = log c "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str in
-    TLS.server_of_flow cfg tcp >>= function
-    | `Error _ -> log "TLS failed"; TCP.close tcp
-    | `Ok tls  -> log "TLS ok"; f tls >>= fun () ->TLS.close tls
-    | `Eof     -> log "TLS eof"; TCP.close tcp
 
   let tls_init kv =
     X509.certificate kv `Default >>= fun cert ->
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start c stack _clock data keys =
+  let start c _ data keys http =
     tls_init keys >>= fun cfg ->
-    let callback = Https.listen @@ DS.serve c (DS.dispatcher data) in
-    let https flow = with_tls c cfg flow ~f:callback in
-    let http flow = with_http c flow in
-    S.listen_tcpv4 stack ~port:443 https;
-    S.listen_tcpv4 stack ~port:80 http;
-    S.listen stack
+    let tcp = `TCP 443 in
+    let tls = `TLS (cfg, tcp) in
+    Lwt.join [
+      http tls @@ D.serve c (D.dispatcher data) ;
+      http (`TCP 80) @@ D.serve c D.redirect
+    ]
 
 end

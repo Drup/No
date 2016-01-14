@@ -51,6 +51,7 @@ let no = CCHashtbl.of_list [
   "ja"     , "いいえ。"   ; (* Japanese *)
   "jbo"    , "na go'i"   ; (* Lojban *)
   "kk"     , "Жоқ."      ; (* Kazakh *)
+  "kn"     , "ಇಲ್ಲ"       ; (* Kannada *)
   "la"     , "Non est."  ; (* Latin *)
   "lb"     , "Neen."     ; (* Luxembourgish, Letzeburgesch *)
   "lt"     , "Ne."       ; (* Lithuanian *)

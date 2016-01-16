@@ -12,6 +12,8 @@ let distinguish tbl l =
   CCHashtbl.to_seq tbl
   |> S.filter (fun (x,_) -> not @@ List.mem x l)
   |> S.map snd
+  |> S.to_array
+  |> (fun a -> CCArray.shuffle a ; S.of_array a)
   |> S.append front
 
 

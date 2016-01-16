@@ -1,7 +1,5 @@
 (** The database containing the words. *)
 
-(** Returns a sequence of languages where bindings in l are
-    on the front and the rest follows, in a non-determined order. *)
 let distinguish tbl l =
   let module S = Sequence in
   let front =

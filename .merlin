@@ -1,5 +1,4 @@
-S .
-B _build/*
+B _build
 
 PKG sequence containers tyxml
 PKG mirage cohttp cstruct tls mirage-http

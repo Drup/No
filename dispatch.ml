@@ -21,12 +21,8 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
 
   (** This is the part that is not boilerplate. *)
 
-  let bool_of_string = function
-    | "" | "0" | "false" -> false
-    | _  -> true
-
   let accept_lang headers =
-    if not @@ Bootvar_gen.use_headers () then []
+    if not @@ Key_gen.use_headers () then []
     else
       let open Cohttp in
       headers
@@ -42,7 +38,7 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
       let lang =
         CCOpt.get [] (Uri.get_query_param' uri "lang") @
         accept_lang (Cohttp.Request.headers request) @
-        [Bootvar_gen.lang ()]
+        [Key_gen.lang ()]
       in
       log c "Answering languages: %s" @@ String.concat ";" @@ lang ;
       Generator.page lang
@@ -93,14 +89,12 @@ struct
 
   module D  = Dispatch(C)(DATA)(Http)
 
-  let log c fmt = Printf.ksprintf (C.log c) fmt
-
   let tls_init kv =
     X509.certificate kv `Default >>= fun cert ->
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start c _ data keys http =
+  let start c () data keys http =
     tls_init keys >>= fun cfg ->
     let tcp = `TCP 443 in
     let tls = `TLS (cfg, tcp) in

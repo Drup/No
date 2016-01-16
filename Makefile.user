@@ -1,0 +1,3 @@
+.PHONY: secrets
+secrets:
+	@openssl req -x509 -newkey rsa:2048 -nodes -keyout secrets/server.key -out secrets/server.pem -days 365 -batch

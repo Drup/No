@@ -1,6 +1,6 @@
 Makefile
 No.xe
-No.xl
+No.xl*
 No_libvirt.xml
 _build/
 log
@@ -11,4 +11,4 @@ static1.ml
 static1.mli
 static2.ml
 static2.mli
-bootvar_gen.ml
+key_gen.ml

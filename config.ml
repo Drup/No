@@ -4,18 +4,18 @@ open Mirage
 
 (** Default language *)
 let bootvar_lang =
-  let doc = Key.Doc.create
+  let i = Key.Arg.info
       ~doc:"Default language for the page served by the unikernel." ["lang"]
   in
-  Key.create ~doc ~default:"en" "lang" Key.Desc.string
+  Key.create "lang" Key.Arg.(opt string "en" i)
 
 (** Consider headers *)
 let bootvar_use_headers =
-  let doc = Key.Doc.create
+  let i = Key.Arg.info
       ~doc:"Use headers to determine the language of the website visitor."
       ["use-header"]
   in
-  Key.create ~doc ~default:true "use_headers" Key.Desc.bool
+  Key.create "use_headers" Key.Arg.(opt bool true i)
 
 (* Network configuration *)
 
@@ -42,7 +42,7 @@ let () =
     ~libraries
     ~packages
     ~keys:[
-      Key.hide bootvar_lang ;
-      Key.hide bootvar_use_headers ;
+      Key.abstract bootvar_lang ;
+      Key.abstract bootvar_use_headers ;
     ]
     [ server $ default_console $ default_clock $ data $ keys $ my_https ]

@@ -4,10 +4,7 @@ open V1_LWT
 open Lwt.Infix
 
 (** Common signature for http and https. *)
-module type HTTP = sig
-  include Cohttp_lwt.Server
-  val listen: t -> IO.conn -> unit Lwt.t
-end
+module type HTTP = Cohttp_lwt.Server
 
 module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
 

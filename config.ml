@@ -23,8 +23,8 @@ let stack = generic_stackv4 default_console tap0
 
 (* storage configuration *)
 
-let data = crunch "./static"
-let keys = crunch "./secrets"
+let data = direct_kv_ro "./static"
+let keys = direct_kv_ro "./secrets"
 
 (* Dependencies *)
 

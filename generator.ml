@@ -26,8 +26,8 @@ let html lang =
   M.html (head words) @@ (body words)
 
 let page =
-  let advert = "
-Made with OCaml <https://ocaml.org/> mirage <https://mirage.io/> and ocsigen <https://ocsigen.org/>.
+  let advert = "\
+Made with OCaml <https://ocaml.org/> mirage <https://mirage.io/> and ocsigen <https://ocsigen.org/>.\
 Join the camelians! \240\159\144\170"
   in
   let f doc =

@@ -31,9 +31,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow:hidden;
 }
 
 #main {
-    font-size: 40vm ;
-    font-size: 40vmin ;
+    width:100% ;
+    height:100% ;
+}
+
+text {
+    font-size: 6em;
 }
